@@ -97,12 +97,12 @@ export default function HistoryPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-12 text-slate-900">
+    <main className="min-h-screen px-6 py-12 text-slate-900">
       <div className="mx-auto max-w-5xl">
         <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-4xl font-bold tracking-tight">历史报告</h1>
-            <p className="mt-4 text-lg text-slate-600">
+            <p className="mt-4 text-lg text-slate-500">
               这里保存了你在当前浏览器中生成过的市场调研报告。
             </p>
           </div>
@@ -110,13 +110,13 @@ export default function HistoryPage() {
           <div className="flex gap-3">
             <Link
               href="/"
-              className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-100"
+              className="rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md"
             >
               返回首页
             </Link>
             <Link
               href="/research"
-              className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700"
+              className="rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-cyan-600 hover:shadow-xl hover:shadow-blue-500/30"
             >
               开始新调研
             </Link>
@@ -124,18 +124,18 @@ export default function HistoryPage() {
         </div>
 
         {!loaded ? (
-          <div className="rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-200">
-            <p className="text-slate-600">正在加载历史报告...</p>
+          <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-8 text-center shadow-sm backdrop-blur-sm">
+            <p className="text-slate-500">正在加载历史报告...</p>
           </div>
         ) : reports.length === 0 ? (
-          <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
-            <h2 className="text-2xl font-bold">暂无历史报告</h2>
-            <p className="mt-4 text-slate-600">
+          <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-10 text-center shadow-sm backdrop-blur-sm">
+            <h2 className="text-2xl font-bold text-slate-900">暂无历史报告</h2>
+            <p className="mt-4 text-slate-500">
               请先生成一份市场调研报告。
             </p>
             <Link
               href="/research"
-              className="mt-6 inline-flex rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-700"
+              className="mt-6 inline-flex rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-cyan-600 hover:shadow-xl hover:shadow-blue-500/30"
             >
               开始调研
             </Link>
@@ -153,31 +153,31 @@ export default function HistoryPage() {
                     handleOpen(report.id);
                   }
                 }}
-                className="cursor-pointer rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-slate-300"
+                className="cursor-pointer rounded-2xl border border-slate-200/80 bg-white/70 p-6 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100/30"
               >
                 <div className="flex flex-col justify-between gap-4 sm:flex-row">
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold">{report.title}</h2>
-                    <p className="mt-2 text-sm text-slate-500">
+                    <h2 className="text-xl font-bold text-slate-900">{report.title}</h2>
+                    <p className="mt-2 text-sm text-slate-400">
                       {report.createdAt}
                     </p>
 
                     <div className="mt-4 flex flex-wrap gap-2 text-sm">
-                      <span className="rounded-full border border-slate-200 px-3 py-1 text-slate-600">
+                      <span className="rounded-full border border-blue-200/60 bg-blue-50/60 px-3 py-1 text-blue-700">
                         {report.country}
                       </span>
-                      <span className="rounded-full border border-slate-200 px-3 py-1 text-slate-600">
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-600">
                         {report.industry}
                       </span>
-                      <span className="rounded-full border border-slate-200 px-3 py-1 text-slate-600">
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-600">
                         {report.product}
                       </span>
-                      <span className="rounded-full border border-slate-200 px-3 py-1 text-slate-600">
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-600">
                         {report.purpose}
                       </span>
                     </div>
 
-                    <p className="mt-5 leading-7 text-slate-700">
+                    <p className="mt-5 leading-7 text-slate-600">
                       {getSummary(report.reportText)}
                     </p>
                   </div>
@@ -188,7 +188,7 @@ export default function HistoryPage() {
                       onClick={(event) => {
                         void handleCopy(event, report);
                       }}
-                      className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700"
+                      className="rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-cyan-600"
                     >
                       {copiedId === report.id ? "已复制" : "复制报告"}
                     </button>
@@ -196,7 +196,7 @@ export default function HistoryPage() {
                     <button
                       type="button"
                       onClick={(event) => handleDelete(event, report.id)}
-                      className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-red-600 shadow-sm hover:bg-red-50"
+                      className="rounded-xl border border-red-200 bg-white/70 px-4 py-2 text-sm font-medium text-red-500 shadow-sm backdrop-blur-sm transition-all hover:bg-red-50 hover:border-red-300 hover:text-red-600"
                     >
                       删除
                     </button>

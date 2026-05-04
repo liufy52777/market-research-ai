@@ -2,12 +2,12 @@ import Link from "next/link";
 
 export default function ExamplePage() {
   return (
-    <div className="flex min-h-screen flex-col items-center bg-gradient-to-b from-white to-zinc-100/50 px-4 py-16">
+    <div className="flex min-h-screen flex-col items-center px-4 py-16">
       <div className="mx-auto w-full max-w-3xl">
         {/* Back link */}
         <Link
           href="/"
-          className="mb-8 inline-flex items-center gap-1 text-sm text-zinc-400 transition-colors hover:text-zinc-600"
+          className="mb-8 inline-flex items-center gap-1 text-sm text-slate-400 transition-colors hover:text-slate-600"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
@@ -16,19 +16,19 @@ export default function ExamplePage() {
         </Link>
 
         {/* Header */}
-        <h1 className="mb-3 text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">
+        <h1 className="mb-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
           示例调研报告
         </h1>
-        <p className="mb-3 text-base leading-relaxed text-zinc-500">
+        <p className="mb-3 text-base leading-relaxed text-slate-500">
           以下内容展示市场调研报告的基础结构，帮助用户理解生成结果的呈现形式。
         </p>
-        <p className="mb-10 text-sm text-zinc-400">
+        <div className="mb-10 inline-flex items-center gap-1.5 rounded-full border border-blue-200/60 bg-blue-50/70 px-4 py-1.5 text-xs font-medium text-blue-700 backdrop-blur-sm">
           示例主题：摩洛哥汽车零部件市场初步调研报告——以汽车线束产品为例
-        </p>
+        </div>
 
         {/* Report Card */}
-        <div className="rounded-xl border border-zinc-200 bg-white p-8 shadow-sm sm:p-10">
-          <div className="space-y-8 text-sm leading-7 text-zinc-600">
+        <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-8 shadow-sm backdrop-blur-sm sm:p-10">
+          <div className="space-y-8 text-sm leading-7 text-slate-600">
             <Section title="一、执行摘要">
               <p>
                 本报告针对摩洛哥汽车零部件市场中的汽车线束产品展开初步调研，旨在为中国
@@ -210,7 +210,7 @@ export default function ExamplePage() {
         <div className="mt-10 text-center">
           <Link
             href="/research"
-            className="inline-block rounded-lg bg-zinc-900 px-8 py-3 text-base font-medium text-white shadow-sm transition-all hover:bg-zinc-800 hover:shadow-md"
+            className="inline-block rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-9 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-cyan-600 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5"
           >
             开始生成我的报告
           </Link>
@@ -231,8 +231,8 @@ function Section({
 }) {
   return (
     <section>
-      <h3 className="mb-3 text-base font-semibold text-zinc-900">{title}</h3>
-      <div className="text-sm leading-7 text-zinc-600">{children}</div>
+      <h3 className="mb-3 text-base font-semibold text-slate-900">{title}</h3>
+      <div className="text-sm leading-7 text-slate-600">{children}</div>
     </section>
   );
 }

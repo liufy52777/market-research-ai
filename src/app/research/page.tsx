@@ -147,12 +147,12 @@ export default function ResearchPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-gradient-to-b from-white to-zinc-100/50 px-4 py-16">
+    <div className="flex min-h-screen flex-col items-center px-4 py-16">
       <div className="mx-auto w-full max-w-3xl">
         {/* Back link */}
         <Link
           href="/"
-          className="mb-8 inline-flex items-center gap-1 text-sm text-zinc-400 transition-colors hover:text-zinc-600"
+          className="mb-8 inline-flex items-center gap-1 text-sm text-slate-400 transition-colors hover:text-slate-600"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
@@ -161,15 +161,18 @@ export default function ResearchPage() {
         </Link>
 
         {/* Header */}
-        <h1 className="mb-3 text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">
+        <h1 className="mb-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
           开始市场调研
         </h1>
-        <p className="mb-10 text-base leading-relaxed text-zinc-500">
+        <p className="mb-10 text-base leading-relaxed text-slate-500">
           请填写目标市场与产品信息，系统将根据这些信息生成结构化市场调研报告。
         </p>
 
-        {/* Form */}
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        {/* Form card */}
+        <form
+          className="space-y-6 rounded-2xl border border-slate-200/80 bg-white/70 p-6 shadow-sm backdrop-blur-sm sm:p-8"
+          onSubmit={handleSubmit}
+        >
           <TextInput
             label="目标国家 / 地区"
             placeholder="例如：摩洛哥"
@@ -202,14 +205,14 @@ export default function ResearchPage() {
           />
 
           {error && (
-            <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            <p className="rounded-xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-600 backdrop-blur-sm">
               {error}
             </p>
           )}
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-zinc-900 px-6 py-3.5 text-base font-medium text-white shadow-sm transition-all hover:bg-zinc-800 hover:shadow-md"
+            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-cyan-600 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5"
           >
             生成调研报告
           </button>
@@ -217,8 +220,8 @@ export default function ResearchPage() {
 
         {/* Report */}
         {reportData && (
-          <div className="mt-12 rounded-xl border border-zinc-200 bg-white p-8 shadow-sm sm:p-10">
-            <h2 className="mb-8 text-xl font-bold text-zinc-900">
+          <div className="mt-12 rounded-2xl border border-slate-200/80 bg-white/80 p-8 shadow-sm backdrop-blur-sm sm:p-10">
+            <h2 className="mb-8 text-xl font-bold text-slate-900">
               调研报告预览
             </h2>
             <div className="space-y-8">
@@ -232,33 +235,33 @@ export default function ResearchPage() {
             </div>
 
             {/* Actions */}
-            <div className="mt-10 flex flex-col items-start gap-3 border-t border-zinc-100 pt-8 sm:flex-row sm:items-center">
+            <div className="mt-10 flex flex-col items-start gap-3 border-t border-slate-100 pt-8 sm:flex-row sm:items-center">
               <button
                 onClick={handleCopy}
-                className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-zinc-800 hover:shadow-md"
+                className="rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-cyan-600 hover:shadow-xl hover:shadow-blue-500/30"
               >
                 复制报告
               </button>
               <button
                 onClick={handleReset}
-                className="rounded-lg border border-zinc-300 bg-white px-6 py-2.5 text-sm font-medium text-zinc-700 shadow-sm transition-all hover:bg-zinc-50 hover:border-zinc-400"
+                className="rounded-xl border border-slate-200 bg-white/70 px-6 py-2.5 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md"
               >
                 重新填写
               </button>
               <button
                 onClick={handleDownloadMarkdown}
-                className="rounded-lg border border-zinc-300 bg-white px-6 py-2.5 text-sm font-medium text-zinc-700 shadow-sm transition-all hover:bg-zinc-50 hover:border-zinc-400"
+                className="rounded-xl border border-slate-200 bg-white/70 px-6 py-2.5 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md"
               >
                 导出 Markdown
               </button>
               {copied && (
-                <span className="text-sm text-emerald-600">
+                <span className="text-sm font-medium text-emerald-600">
                   已复制到剪贴板
                 </span>
               )}
               <Link
                 href="/history"
-                className="text-sm text-blue-600 transition-colors hover:text-blue-700 sm:ml-auto"
+                className="text-sm font-medium text-blue-600 transition-colors hover:text-blue-700 sm:ml-auto"
               >
                 查看历史报告 →
               </Link>
@@ -289,7 +292,7 @@ function TextInput({
 }) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium text-zinc-700">
+      <label className="mb-2 block text-sm font-medium text-slate-700">
         {label}
       </label>
       <input
@@ -297,7 +300,7 @@ function TextInput({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 shadow-sm outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 shadow-sm outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
       />
     </div>
   );
@@ -308,11 +311,11 @@ function TextInput({
 /* ------------------------------------------------------------------ */
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h3 className="mb-3 text-base font-semibold text-zinc-900">{children}</h3>;
+  return <h3 className="mb-3 text-base font-semibold text-slate-900">{children}</h3>;
 }
 
 function SectionBody({ children }: { children: React.ReactNode }) {
-  return <div className="text-sm leading-7 text-zinc-600">{children}</div>;
+  return <div className="text-sm leading-7 text-slate-600">{children}</div>;
 }
 
 function ExecSummary({ data: d }: { data: FormData }) {

@@ -118,9 +118,9 @@ export default function HistoryDetailPage() {
 
   if (!loaded) {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-12 text-slate-900">
-        <div className="mx-auto max-w-4xl rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-200">
-          <p className="text-slate-600">正在加载报告...</p>
+      <main className="min-h-screen px-6 py-12 text-slate-900">
+        <div className="mx-auto max-w-4xl rounded-2xl border border-slate-200/80 bg-white/70 p-8 text-center shadow-sm backdrop-blur-sm">
+          <p className="text-slate-500">正在加载报告...</p>
         </div>
       </main>
     );
@@ -128,15 +128,15 @@ export default function HistoryDetailPage() {
 
   if (!report) {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-12 text-slate-900">
-        <div className="mx-auto max-w-4xl rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
-          <h1 className="text-3xl font-bold">未找到该报告</h1>
-          <p className="mt-4 text-slate-600">
+      <main className="min-h-screen px-6 py-12 text-slate-900">
+        <div className="mx-auto max-w-4xl rounded-2xl border border-slate-200/80 bg-white/70 p-10 text-center shadow-sm backdrop-blur-sm">
+          <h1 className="text-3xl font-bold text-slate-900">未找到该报告</h1>
+          <p className="mt-4 text-slate-500">
             该报告可能已被删除，或当前浏览器中没有对应的历史记录。
           </p>
           <Link
             href="/history"
-            className="mt-6 inline-flex rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-700"
+            className="mt-6 inline-flex rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-cyan-600"
           >
             返回历史报告
           </Link>
@@ -146,20 +146,23 @@ export default function HistoryDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-12 text-slate-900">
+    <main className="min-h-screen px-6 py-12 text-slate-900">
       <div className="mx-auto max-w-4xl">
         <Link
           href="/history"
-          className="text-sm font-medium text-slate-500 hover:text-slate-900"
+          className="inline-flex items-center gap-1 text-sm font-medium text-slate-400 transition-colors hover:text-slate-600"
         >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
           返回历史报告
         </Link>
 
-        <div className="mt-8 rounded-2xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
-          <div className="flex flex-col justify-between gap-5 border-b border-slate-200 pb-6 sm:flex-row sm:items-start">
+        <div className="mt-8 rounded-2xl border border-slate-200/80 bg-white/80 p-8 shadow-sm backdrop-blur-sm sm:p-10">
+          <div className="flex flex-col justify-between gap-5 border-b border-slate-100 pb-6 sm:flex-row sm:items-start">
             <div>
-              <h1 className="text-3xl font-bold">{report.title}</h1>
-              <p className="mt-3 text-sm text-slate-500">
+              <h1 className="text-3xl font-bold text-slate-900">{report.title}</h1>
+              <p className="mt-3 text-sm text-slate-400">
                 创建时间：{report.createdAt}
               </p>
             </div>
@@ -170,7 +173,7 @@ export default function HistoryDetailPage() {
                 onClick={() => {
                   void handleCopy();
                 }}
-                className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700"
+                className="rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-cyan-600"
               >
                 {copied ? "已复制" : "复制完整报告"}
               </button>
@@ -178,39 +181,41 @@ export default function HistoryDetailPage() {
               <button
                 type="button"
                 onClick={handleExportMarkdown}
-                className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-100"
+                className="rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md"
               >
                 导出 Markdown
               </button>
             </div>
           </div>
 
-          <section className="mt-6 grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
-            <p>
-              <span className="font-semibold text-slate-900">国家 / 地区：</span>
-              {report.country}
-            </p>
-            <p>
-              <span className="font-semibold text-slate-900">行业：</span>
-              {report.industry}
-            </p>
-            <p>
-              <span className="font-semibold text-slate-900">产品：</span>
-              {report.product}
-            </p>
-            <p>
-              <span className="font-semibold text-slate-900">企业身份：</span>
-              {report.role}
-            </p>
-            <p className="sm:col-span-2">
-              <span className="font-semibold text-slate-900">调研目的：</span>
-              {report.purpose}
-            </p>
+          <section className="mt-6 rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/40 p-5">
+            <div className="grid gap-3 text-sm sm:grid-cols-2">
+              <p>
+                <span className="font-semibold text-slate-800">国家 / 地区：</span>
+                <span className="text-slate-600">{report.country}</span>
+              </p>
+              <p>
+                <span className="font-semibold text-slate-800">行业：</span>
+                <span className="text-slate-600">{report.industry}</span>
+              </p>
+              <p>
+                <span className="font-semibold text-slate-800">产品：</span>
+                <span className="text-slate-600">{report.product}</span>
+              </p>
+              <p>
+                <span className="font-semibold text-slate-800">企业身份：</span>
+                <span className="text-slate-600">{report.role}</span>
+              </p>
+              <p className="sm:col-span-2">
+                <span className="font-semibold text-slate-800">调研目的：</span>
+                <span className="text-slate-600">{report.purpose}</span>
+              </p>
+            </div>
           </section>
 
           <section className="mt-8">
-            <h2 className="text-2xl font-bold">完整报告正文</h2>
-            <div className="mt-5 whitespace-pre-line rounded-2xl bg-slate-50 p-6 leading-8 text-slate-700 ring-1 ring-slate-200">
+            <h2 className="text-2xl font-bold text-slate-900">完整报告正文</h2>
+            <div className="mt-5 whitespace-pre-line rounded-2xl border border-slate-100 bg-white p-6 leading-8 text-slate-700 shadow-sm">
               {report.reportText}
             </div>
           </section>

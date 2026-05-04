@@ -9,11 +9,11 @@ const navLinks = [
 
 export default function SiteHeader() {
   return (
-    <header className="border-b border-zinc-200 bg-white/90 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/80 shadow-sm shadow-slate-200/20 backdrop-blur-md">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
         <Link
           href="/"
-          className="text-lg font-bold tracking-tight text-zinc-900 transition-colors hover:text-zinc-700"
+          className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-lg font-bold tracking-tight text-transparent"
         >
           Market Research AI
         </Link>
@@ -22,7 +22,7 @@ export default function SiteHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-lg px-3 py-1.5 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-500 transition-all hover:bg-blue-50 hover:text-blue-600"
             >
               {link.label}
             </Link>
