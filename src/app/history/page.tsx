@@ -17,6 +17,7 @@ type ReportRecord = {
   purpose: string;
   reportText: string;
   createdAt: string;
+  model?: string;
 };
 
 function readReports(): ReportRecord[] {
@@ -175,6 +176,11 @@ export default function HistoryPage() {
                       <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-600">
                         {report.purpose}
                       </span>
+                      {report.model && (
+                        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-400">
+                          模型：{report.model}
+                        </span>
+                      )}
                     </div>
 
                     <p className="mt-5 leading-7 text-slate-600">

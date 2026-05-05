@@ -16,6 +16,7 @@ type ReportRecord = {
   purpose: string;
   reportText: string;
   createdAt: string;
+  model?: string;
 };
 
 function readReports(): ReportRecord[] {
@@ -209,6 +210,10 @@ export default function HistoryDetailPage() {
               <p className="sm:col-span-2">
                 <span className="font-semibold text-slate-800">调研目的：</span>
                 <span className="text-slate-600">{report.purpose}</span>
+              </p>
+              <p>
+                <span className="font-semibold text-slate-800">生成模型：</span>
+                <span className="text-slate-600">{report.model || "未记录"}</span>
               </p>
             </div>
           </section>

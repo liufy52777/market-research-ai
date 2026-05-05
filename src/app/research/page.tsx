@@ -21,12 +21,14 @@ interface ReportRecord {
   purpose: string;
   reportText: string;
   createdAt: string;
+  model?: string;
 }
 
 interface ApiSuccessResponse {
   success: true;
   reportText: string;
   mode: string;
+  model?: string;
 }
 
 interface ApiErrorResponse {
@@ -47,7 +49,7 @@ const emptyForm: FormData = {
   purpose: "",
 };
 
-function saveToHistory(data: FormData, reportText: string): void {
+function saveToHistory(data: FormData, reportText: string, model?: string): void {
   const record: ReportRecord = {
     id: Date.now().toString(),
     title: `${data.country} ${data.industry} ${data.product} 调研报告`,
@@ -57,6 +59,7 @@ function saveToHistory(data: FormData, reportText: string): void {
     role: data.identity,
     purpose: data.purpose,
     reportText,
+    model,
     createdAt: new Date().toLocaleString("zh-CN", {
       year: "numeric",
       month: "2-digit",
@@ -81,6 +84,7 @@ export default function ResearchPage() {
   const [reportData, setReportData] = useState<FormData | null>(null);
   const [reportText, setReportText] = useState<string | null>(null);
   const [mode, setMode] = useState<string | null>(null);
+  const [modelName, setModelName] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -99,6 +103,7 @@ export default function ResearchPage() {
       setReportData(null);
       setReportText(null);
       setMode(null);
+      setModelName(null);
       return;
     }
 
@@ -132,13 +137,15 @@ export default function ResearchPage() {
 
       setReportText(json.reportText);
       setMode(json.mode);
+      setModelName(json.model ?? null);
       setReportData({ ...formData });
-      saveToHistory(formData, json.reportText);
+      saveToHistory(formData, json.reportText, json.model);
     } catch {
       setError("报告生成失败，请稍后重试。");
       setReportData(null);
       setReportText(null);
       setMode(null);
+      setModelName(null);
     } finally {
       setIsGenerating(false);
     }
@@ -159,6 +166,7 @@ export default function ResearchPage() {
     setReportData(null);
     setReportText(null);
     setMode(null);
+    setModelName(null);
     setError("");
     setCopied(false);
   };
@@ -286,11 +294,18 @@ export default function ResearchPage() {
               <h2 className="text-xl font-bold text-slate-900">
                 调研报告预览
               </h2>
-              {mode && (
-                <span className="inline-flex rounded-full border border-blue-200/60 bg-blue-50/70 px-3 py-1 text-xs font-medium text-blue-600 backdrop-blur-sm">
-                  生成模式：API {mode}
-                </span>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {mode && (
+                  <span className="inline-flex rounded-full border border-blue-200/60 bg-blue-50/70 px-3 py-1 text-xs font-medium text-blue-600 backdrop-blur-sm">
+                    生成模式：API {mode}
+                  </span>
+                )}
+                {modelName && (
+                  <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-500 backdrop-blur-sm">
+                    模型：{modelName}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="space-y-8">
               <ExecSummary data={reportData} />
