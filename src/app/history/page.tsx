@@ -58,7 +58,7 @@ export default function HistoryPage() {
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setReports(savedReports);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setLoaded(true);
   }, []);
 

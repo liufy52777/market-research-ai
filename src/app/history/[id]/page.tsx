@@ -76,7 +76,7 @@ export default function HistoryDetailPage() {
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setReport(found);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setLoaded(true);
   }, [id]);
 
