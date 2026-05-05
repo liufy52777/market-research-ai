@@ -158,9 +158,10 @@ export default function HistoryDetailPage() {
           </div>
 
           <section className="mt-6 rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/40 p-5">
+            <h3 className="mb-3 text-sm font-semibold text-slate-700">报告概览</h3>
             <div className="grid gap-3 text-sm sm:grid-cols-2">
               <p>
-                <span className="font-semibold text-slate-800">国家 / 地区：</span>
+                <span className="font-semibold text-slate-800">目标市场：</span>
                 <span className="text-slate-600">{report.country}</span>
               </p>
               <p>
@@ -181,11 +182,19 @@ export default function HistoryDetailPage() {
               </p>
               <p>
                 <span className="font-semibold text-slate-800">生成模式：</span>
-                <span className="text-slate-600">{report.mode || "未记录"}</span>
+                <span className="text-slate-600">{report.generationMode || report.mode || "未记录"}</span>
               </p>
               <p>
                 <span className="font-semibold text-slate-800">生成模型：</span>
                 <span className="text-slate-600">{report.model || "未记录"}</span>
+              </p>
+              <p>
+                <span className="font-semibold text-slate-800">联网搜索：</span>
+                {report.webSearchEnabled ? (
+                  <span className="text-emerald-600">已启用</span>
+                ) : (
+                  <span className="text-slate-400">{report.webSearchEnabled === false ? "未启用" : "未记录"}</span>
+                )}
               </p>
               {report.warning && (
                 <p className="sm:col-span-2">

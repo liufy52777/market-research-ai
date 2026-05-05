@@ -168,14 +168,17 @@ export default function ResearchPage() {
       minute: "2-digit",
     });
     const md = [
-      "# 市场调研报告",
+      `# ${reportData.country} ${reportData.industry} ${reportData.product} 市场调研报告`,
       "",
-      "## 基本信息",
-      `- 目标国家 / 地区：${reportData.country}`,
+      "## 报告元信息",
+      `- 目标市场：${reportData.country}`,
       `- 行业：${reportData.industry}`,
-      `- 具体产品：${reportData.product}`,
+      `- 产品：${reportData.product}`,
       `- 企业身份：${reportData.identity}`,
       `- 调研目的：${reportData.purpose}`,
+      `- 生成模式：${generationMode || "-"}`,
+      `- 模型：${modelName || "-"}`,
+      `- 联网搜索：${webSearchEnabled ? "已启用" : "未启用"}`,
       `- 生成时间：${now}`,
       "",
       "## 报告正文",
@@ -316,6 +319,27 @@ export default function ResearchPage() {
                 {warning}
               </div>
             )}
+
+            {/* Report Overview Card */}
+            <div className="mb-6 rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/40 p-5">
+              <h3 className="mb-3 text-sm font-semibold text-slate-700">报告概览</h3>
+              <div className="grid gap-2 text-sm sm:grid-cols-2">
+                <p><span className="font-medium text-slate-600">目标市场：</span><span className="text-slate-500">{reportData.country}</span></p>
+                <p><span className="font-medium text-slate-600">行业：</span><span className="text-slate-500">{reportData.industry}</span></p>
+                <p><span className="font-medium text-slate-600">产品：</span><span className="text-slate-500">{reportData.product}</span></p>
+                <p><span className="font-medium text-slate-600">企业身份：</span><span className="text-slate-500">{reportData.identity}</span></p>
+                <p className="sm:col-span-2"><span className="font-medium text-slate-600">调研目的：</span><span className="text-slate-500">{reportData.purpose}</span></p>
+                <p><span className="font-medium text-slate-600">生成模式：</span><span className="text-slate-500">{generationMode || "-"}</span></p>
+                <p><span className="font-medium text-slate-600">模型：</span><span className="text-slate-500">{modelName || "-"}</span></p>
+                <p><span className="font-medium text-slate-600">联网搜索：</span>
+                  {webSearchEnabled ? (
+                    <span className="text-emerald-600">已启用</span>
+                  ) : (
+                    <span className="text-slate-400">未启用</span>
+                  )}
+                </p>
+              </div>
+            </div>
 
             <div className="whitespace-pre-line text-sm leading-7 text-slate-700">
               {reportText}

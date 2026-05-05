@@ -145,6 +145,15 @@ export default function HistoryPage() {
                           模型：{report.model}
                         </span>
                       )}
+                      {report.webSearchEnabled ? (
+                        <span className="rounded-full border border-emerald-200/60 bg-emerald-50/60 px-3 py-1 text-xs text-emerald-600">
+                          联网生成
+                        </span>
+                      ) : report.generationMode === "mock-template" || report.mode === "mock-template" ? (
+                        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-400">
+                          模板生成
+                        </span>
+                      ) : null}
                     </div>
 
                     <p className="mt-5 leading-7 text-slate-600">
