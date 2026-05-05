@@ -2,44 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-
-interface FormData {
-  country: string;
-  industry: string;
-  product: string;
-  identity: string;
-  purpose: string;
-}
-
-interface ReportRecord {
-  id: string;
-  title: string;
-  country: string;
-  industry: string;
-  product: string;
-  role: string;
-  purpose: string;
-  reportText: string;
-  createdAt: string;
-  model?: string;
-}
-
-interface ApiSuccessResponse {
-  success: true;
-  reportText: string;
-  mode: string;
-  model?: string;
-}
-
-interface ApiErrorResponse {
-  success: false;
-  error: string;
-}
-
-type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
-
-const STORAGE_KEY = "market-research-reports";
-const MAX_REPORTS = 20;
+import type { FormData, ReportRecord, ApiResponse, SearchSource } from "@/lib/types";
+import { writeReports, readReports, MAX_REPORTS } from "@/lib/storage";
 
 const emptyForm: FormData = {
   country: "",
@@ -49,7 +13,18 @@ const emptyForm: FormData = {
   purpose: "",
 };
 
-function saveToHistory(data: FormData, reportText: string, model?: string): void {
+interface SaveToHistoryParams {
+  data: FormData;
+  reportText: string;
+  generationMode?: string;
+  model?: string;
+  warning?: string;
+  webSearchEnabled?: boolean;
+  sources?: SearchSource[];
+}
+
+function saveToHistory(params: SaveToHistoryParams): void {
+  const { data, reportText, generationMode, model, warning, webSearchEnabled, sources } = params;
   const record: ReportRecord = {
     id: Date.now().toString(),
     title: `${data.country} ${data.industry} ${data.product} 调研报告`,
@@ -59,7 +34,11 @@ function saveToHistory(data: FormData, reportText: string, model?: string): void
     role: data.identity,
     purpose: data.purpose,
     reportText,
+    generationMode,
     model,
+    warning,
+    webSearchEnabled,
+    sources,
     createdAt: new Date().toLocaleString("zh-CN", {
       year: "numeric",
       month: "2-digit",
@@ -69,25 +48,32 @@ function saveToHistory(data: FormData, reportText: string, model?: string): void
     }),
   };
 
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const existing: ReportRecord[] = raw ? JSON.parse(raw) : [];
-    const updated = [record, ...existing].slice(0, MAX_REPORTS);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  } catch {
-    // localStorage write failed — silently ignore
-  }
+  const existing = readReports();
+  writeReports([record, ...existing].slice(0, MAX_REPORTS));
 }
 
 export default function ResearchPage() {
   const [formData, setFormData] = useState<FormData>(emptyForm);
   const [reportData, setReportData] = useState<FormData | null>(null);
   const [reportText, setReportText] = useState<string | null>(null);
-  const [mode, setMode] = useState<string | null>(null);
+  const [generationMode, setGenerationMode] = useState<string | null>(null);
   const [modelName, setModelName] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
+  const [webSearchEnabled, setWebSearchEnabled] = useState(false);
+  const [sources, setSources] = useState<SearchSource[]>([]);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const clearReport = () => {
+    setReportData(null);
+    setReportText(null);
+    setGenerationMode(null);
+    setModelName(null);
+    setWarning(null);
+    setWebSearchEnabled(false);
+    setSources([]);
+  };
 
   const handleChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -100,17 +86,14 @@ export default function ResearchPage() {
     const hasEmpty = Object.values(formData).some((v) => v.trim() === "");
     if (hasEmpty) {
       setError("请先完整填写调研信息");
-      setReportData(null);
-      setReportText(null);
-      setMode(null);
-      setModelName(null);
+      clearReport();
       return;
     }
 
     setError("");
     setCopied(false);
     setIsGenerating(true);
-    setMode(null);
+    setGenerationMode(null);
 
     try {
       const res = await fetch("/api/generate-report", {
@@ -129,23 +112,30 @@ export default function ResearchPage() {
 
       if (!json.success) {
         setError(json.error);
-        setReportData(null);
-        setReportText(null);
-        setMode(null);
+        clearReport();
         return;
       }
 
       setReportText(json.reportText);
-      setMode(json.mode);
+      setGenerationMode(json.generationMode ?? json.mode ?? null);
       setModelName(json.model ?? null);
+      setWarning(json.warning ?? null);
+      setWebSearchEnabled(json.webSearchEnabled ?? false);
+      setSources(json.sources ?? []);
       setReportData({ ...formData });
-      saveToHistory(formData, json.reportText, json.model);
+
+      saveToHistory({
+        data: formData,
+        reportText: json.reportText,
+        generationMode: json.generationMode ?? json.mode,
+        model: json.model,
+        warning: json.warning,
+        webSearchEnabled: json.webSearchEnabled,
+        sources: json.sources,
+      });
     } catch {
       setError("报告生成失败，请稍后重试。");
-      setReportData(null);
-      setReportText(null);
-      setMode(null);
-      setModelName(null);
+      clearReport();
     } finally {
       setIsGenerating(false);
     }
@@ -163,10 +153,7 @@ export default function ResearchPage() {
 
   const handleReset = () => {
     setFormData({ ...emptyForm });
-    setReportData(null);
-    setReportText(null);
-    setMode(null);
-    setModelName(null);
+    clearReport();
     setError("");
     setCopied(false);
   };
@@ -194,9 +181,18 @@ export default function ResearchPage() {
       "## 报告正文",
       "",
       reportText,
-    ].join("\n");
+    ];
 
-    const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+    if (sources.length > 0) {
+      md.push("", "## 参考来源", "");
+      for (const s of sources) {
+        md.push(`- ${s.title || s.url}${s.url ? `：${s.url}` : ""}`);
+      }
+    }
+
+    const content = md.join("\n");
+
+    const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -295,9 +291,9 @@ export default function ResearchPage() {
                 调研报告预览
               </h2>
               <div className="flex flex-wrap items-center gap-2">
-                {mode && (
+                {generationMode && (
                   <span className="inline-flex rounded-full border border-blue-200/60 bg-blue-50/70 px-3 py-1 text-xs font-medium text-blue-600 backdrop-blur-sm">
-                    生成模式：API {mode}
+                    生成模式：{generationMode}
                   </span>
                 )}
                 {modelName && (
@@ -305,11 +301,59 @@ export default function ResearchPage() {
                     模型：{modelName}
                   </span>
                 )}
+                {webSearchEnabled && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200/60 bg-emerald-50/70 px-3 py-1 text-xs font-medium text-emerald-600 backdrop-blur-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    联网搜索已启用
+                  </span>
+                )}
               </div>
             </div>
+
+            {warning && (
+              <div className="mb-6 rounded-xl border border-amber-200/80 bg-amber-50/70 px-5 py-4 text-sm leading-relaxed text-amber-800 backdrop-blur-sm">
+                <span className="font-semibold">提示：</span>
+                {warning}
+              </div>
+            )}
+
             <div className="whitespace-pre-line text-sm leading-7 text-slate-700">
               {reportText}
             </div>
+
+            {/* Sources */}
+            {sources.length > 0 ? (
+              <div className="mt-8 rounded-xl border border-slate-100 bg-slate-50/80 p-5">
+                <h3 className="mb-3 text-sm font-semibold text-slate-700">
+                  参考来源
+                </h3>
+                <ul className="space-y-2">
+                  {sources.map((s, i) => (
+                    <li key={i} className="text-xs leading-relaxed text-slate-500">
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-blue-600 hover:text-blue-700"
+                      >
+                        {s.title || s.url}
+                      </a>
+                      {s.snippet && (
+                        <span className="ml-2 text-slate-400">
+                          — {s.snippet.slice(0, 120)}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              webSearchEnabled && (
+                <div className="mt-8 rounded-xl border border-slate-200/60 bg-slate-50/60 px-5 py-4 text-xs leading-relaxed text-slate-400">
+                  当前模型已开启联网搜索，但接口未返回可展示的来源列表。建议后续通过资料上传或来源引用功能增强报告可追溯性。
+                </div>
+              )
+            )}
 
             {/* Actions */}
             <div className="mt-10 flex flex-col items-start gap-3 border-t border-slate-100 pt-8 sm:flex-row sm:items-center">
@@ -382,4 +426,3 @@ function TextInput({
     </div>
   );
 }
-

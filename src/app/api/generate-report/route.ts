@@ -12,7 +12,7 @@ interface ReportRequest {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Mock template builder (fallback)                                  */
+/*  Mock template builder (fallback only when no API key)             */
 /* ------------------------------------------------------------------ */
 
 function buildReportText(data: ReportRequest): string {
@@ -76,6 +76,14 @@ function buildReportText(data: ReportRequest): string {
     `- 跨境物流成本、运输周期与本地仓储方案`,
     `- ${country}相关行业展会、行业协会和商业促进机构信息`,
     "- 中资企业在当地的经营情况和可借鉴经验",
+    "",
+    "九、需进一步核验事项",
+    "以下为报告中涉及但缺乏可靠数据支撑的关键信息点，建议作为下一步调研工作的行动清单：",
+    `1. 数据核验：${country}${industry}市场的实际规模、增长率、进口依赖度，建议通过${country}官方统计机构、行业协会年报或海关进出口数据库获取；`,
+    `2. 合规核验：${product}进入${country}市场的具体关税税率、是否涉及反倾销或保障措施、产品认证（如 CE、ISO 或当地等效标准）的适用范围和申请周期；`,
+    `3. 企业调研：${country}市场主要客户（OEM、Tier 1、分销商）名单及采购流程、主要竞争对手（本地及国际品牌）在当地的定价策略和市场份额；`,
+    `4. 成本估算：${country}跨境物流（海运/空运）的标准运费和周期、当地仓储租金水平、产品认证费用和渠道建设初期投入预算；`,
+    "以上事项建议通过官方统计、行业协会、海关数据、展会调研、目标客户访谈等途径逐步核验，并根据核验结果动态调整市场进入策略。",
   ];
 
   return lines.join("\n");
@@ -131,7 +139,7 @@ function buildUserPrompt(data: ReportRequest): string {
 用 2-3 段概括：调研对象（国家、行业、产品）、是否值得进一步进入的初步判断、最关键的 2-3 个机会方向和最关键的 2-3 个风险因素。摘要应让管理层在 1 分钟内理解报告核心结论。不要一上来就绝对判断，要使用审慎表达。
 
 ### 二、市场概况
-围绕 ${data.country} 的 ${data.industry} 市场展开，结合 ${data.product} 的产品特征进行分析。分析需求驱动因素、供给现状、政策环境和发展趋势。不要空泛地写「市场增长迅速」。如果没有实时数据，不要写具体数字，应提示需要进一步核验哪些数据口径（如市场规模、进口依赖度、行业增速等）。
+围绕 ${data.country} 的 ${data.industry} 市场展开，结合 ${data.product} 的产品特征进行分析。分析需求驱动因素、供给现状、政策环境和发展趋势。不要空泛地写「市场增长迅速」。如果没有实时数据，不要写具体数字，应提示需要进一步核验哪些数据口径（如市场规模、进口依赖度、行业增速等）。请优先使用联网搜索结果中的最新信息，并在引用时标注信息来源。
 
 ### 三、目标客户与需求分析
 结合 ${data.role} 的企业定位和 ${data.product} 的产品类型，分析潜在客户。根据行业和产品特性灵活选取：OEM、Tier 1、Tier 2、本地制造企业、分销商、贸易商、售后市场、国际企业当地分支机构等。分析每类客户的采购决策因素（如价格敏感度、认证要求、交期期望、售后需求），不要所有报告都固定一样的客户分类。
@@ -187,6 +195,14 @@ function buildUserPrompt(data: ReportRequest): string {
 - 目标市场对外资供应商的准入限制
 - 客户信用与付款习惯
 
+### 九、需进一步核验事项
+本章节不是免责声明，而是企业调研行动清单。请列出报告中涉及但缺乏可靠数据支撑的所有关键信息点，包括：
+1. 需要核验的数据：市场规模、产量、份额、增长率等（需注明建议核验的数据口径和来源渠道）；
+2. 需要核验的合规事项：关税税率、产品认证标准、进口许可流程、本地化率政策等；
+3. 需要补充调研的企业名单：本地主要客户、竞争对手、分销商、供应链配套企业；
+4. 需要进一步估算的成本项：跨境物流费用、认证费用、渠道建设成本、价格区间调研。
+每条核验事项应具体指明需要确认什么信息、建议通过什么途径获取（如官方统计、行业协会、海关数据、展会调研、客户访谈等），并标注优先级（高/中/低）。
+
 ## 写作要求
 - 全程使用专业、客观、稳健的中文撰写，适合企业内部汇报和决策参考。
 - **严格禁止编造具体数据**。不得写出任何具体的市场份额、产量、销售额、增长率、公司数量、人口数量、GDP、市场规模金额等数字。如果某个结论需要数据支撑，必须使用「建议通过官方统计或行业数据进一步核验」「当前缺少公开数据支撑，需通过实地调研补全」等表述。
@@ -199,24 +215,79 @@ function buildUserPrompt(data: ReportRequest): string {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Bailian API call                                                  */
+/*  Bailian API call (with web search)                                */
 /* ------------------------------------------------------------------ */
+
+interface SearchSource {
+  title: string;
+  url: string;
+  snippet: string;
+}
 
 interface BailianResponse {
   choices?: Array<{
     message?: {
       content?: string;
+      search_info?: {
+        search_results?: Array<{
+          title?: string;
+          url?: string;
+          snippet?: string;
+        }>;
+      };
     };
   }>;
+  output?: {
+    choices?: Array<{
+      message?: {
+        content?: string;
+        search_info?: {
+          search_results?: Array<{
+            title?: string;
+            url?: string;
+            snippet?: string;
+          }>;
+        };
+      };
+    }>;
+  };
+}
+
+interface BailianCallResult {
+  reportText: string;
+  sources: SearchSource[];
+}
+
+function extractSources(json: BailianResponse): SearchSource[] {
+  const results = [];
+
+  // Try choices[0].message.search_info.search_results
+  const searchResults =
+    json.choices?.[0]?.message?.search_info?.search_results ??
+    json.output?.choices?.[0]?.message?.search_info?.search_results;
+
+  if (searchResults) {
+    for (const item of searchResults) {
+      if (item.title || item.url || item.snippet) {
+        results.push({
+          title: item.title ?? "",
+          url: item.url ?? "",
+          snippet: item.snippet ?? "",
+        });
+      }
+    }
+  }
+
+  return results;
 }
 
 async function callBailianAPI(
   data: ReportRequest,
   apiKey: string,
   model: string,
-): Promise<string> {
+): Promise<BailianCallResult> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 60000);
+  const timeoutId = setTimeout(() => controller.abort(), 90000);
 
   try {
     const res = await fetch(BAILIAN_BASE_URL, {
@@ -239,25 +310,53 @@ async function callBailianAPI(
           },
         ],
         temperature: 0.4,
+        enable_search: true,
+        search_options: {
+          forced_search: true,
+          search_strategy: "turbo",
+        },
       }),
       signal: controller.signal,
     });
 
     if (!res.ok) {
       const errorBody = await res.text().catch(() => "");
+      const status = res.status;
+      const snippet = errorBody.slice(0, 300);
+
+      // Detect search-related failures
+      if (
+        snippet.includes("search") ||
+        snippet.includes("Search") ||
+        snippet.includes("enable_search") ||
+        snippet.includes("web_search")
+      ) {
+        throw new Error(
+          `联网搜索不可用：模型可能不支持联网搜索功能（HTTP ${status}）。请确认模型是否开通联网搜索权限。`,
+        );
+      }
+
       throw new Error(
-        `Bailian API returned ${res.status}${errorBody ? `: ${errorBody.slice(0, 200)}` : ""}`,
+        `阿里百炼 API 返回错误（HTTP ${status}）：${snippet}`,
       );
     }
 
     const json: BailianResponse = await res.json();
 
-    const content = json.choices?.[0]?.message?.content;
+    const content =
+      json.choices?.[0]?.message?.content ??
+      json.output?.choices?.[0]?.message?.content;
+
     if (!content || content.trim().length === 0) {
-      throw new Error("Bailian API returned empty content");
+      throw new Error("阿里百炼 API 返回了空的报告内容");
     }
 
-    return content.trim();
+    const sources = extractSources(json);
+
+    return {
+      reportText: content.trim(),
+      sources,
+    };
   } finally {
     clearTimeout(timeoutId);
   }
@@ -288,37 +387,54 @@ export async function POST(request: Request) {
 
   const apiKey = process.env.DASHSCOPE_API_KEY;
   const model = process.env.BAILIAN_MODEL || "qwen3.5-flash";
+  const generatedAt = new Date().toISOString();
 
-  // No API key configured — use mock template directly
+  // No API key configured — use mock template with clear warning
   if (!apiKey) {
-    const reportText = buildReportText(body);
     return NextResponse.json({
       success: true,
-      reportText,
+      reportText: buildReportText(body),
+      provider: "mock",
+      model,
       mode: "mock-template",
-      model: model,
-      warning: "未配置 DASHSCOPE_API_KEY，当前使用本地模板生成",
+      generationMode: "mock-template",
+      webSearchEnabled: false,
+      generatedAt,
+      sources: [],
+      warning: "未配置 DASHSCOPE_API_KEY，当前使用本地模板生成。联网搜索不可用。",
     });
   }
 
-  // Try Bailian API — fallback to mock template on failure
+  // Call Bailian API with web search enabled
   try {
-    const reportText = await callBailianAPI(body, apiKey, model);
+    const { reportText, sources } = await callBailianAPI(body, apiKey, model);
+
     return NextResponse.json({
       success: true,
       reportText,
-      mode: "bailian-qwen",
+      provider: "bailian",
       model,
+      mode: "bailian-qwen-web-search",
+      generationMode: "bailian-qwen-web-search",
+      webSearchEnabled: true,
+      generatedAt,
+      sources,
     });
-  } catch {
-    const reportText = buildReportText(body);
-    return NextResponse.json({
-      success: true,
-      reportText,
-      mode: "mock-template-fallback",
-      model: model,
-      warning: "AI 生成失败，当前使用本地模板生成",
-    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(
+      "[generate-report] Bailian API call failed:",
+      msg.replace(/Bearer\s+\S+/gi, "Bearer ***"),
+    );
+
+    // Return the error directly to the frontend — no silent fallback
+    return NextResponse.json(
+      {
+        success: false,
+        error: `报告生成失败：${msg}`,
+      },
+      { status: 502 },
+    );
   }
 }
 

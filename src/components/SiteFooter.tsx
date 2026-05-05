@@ -13,7 +13,7 @@ export default function SiteFooter() {
             版本：本地原型版
           </p>
           <p className="max-w-md text-xs leading-relaxed text-slate-400">
-            提示：当前报告内容为模板生成结果，后续可扩展联网搜索、来源引用与真实 AI 生成能力。
+            当前版本已接入 AI 模型生成报告。后续可扩展联网搜索、来源引用、PDF 导出与用户系统。
           </p>
         </div>
       </div>

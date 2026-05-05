@@ -3,40 +3,8 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-
-const STORAGE_KEY = "market-research-reports";
-
-type ReportRecord = {
-  id: string;
-  title: string;
-  country: string;
-  industry: string;
-  product: string;
-  role: string;
-  purpose: string;
-  reportText: string;
-  createdAt: string;
-  model?: string;
-};
-
-function readReports(): ReportRecord[] {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed;
-  } catch {
-    return [];
-  }
-}
+import type { ReportRecord } from "@/lib/types";
+import { readReports } from "@/lib/storage";
 
 function buildMarkdown(report: ReportRecord) {
   return `# 市场调研报告
@@ -212,9 +180,19 @@ export default function HistoryDetailPage() {
                 <span className="text-slate-600">{report.purpose}</span>
               </p>
               <p>
+                <span className="font-semibold text-slate-800">生成模式：</span>
+                <span className="text-slate-600">{report.mode || "未记录"}</span>
+              </p>
+              <p>
                 <span className="font-semibold text-slate-800">生成模型：</span>
                 <span className="text-slate-600">{report.model || "未记录"}</span>
               </p>
+              {report.warning && (
+                <p className="sm:col-span-2">
+                  <span className="font-semibold text-amber-700">警告：</span>
+                  <span className="text-amber-700">{report.warning}</span>
+                </p>
+              )}
             </div>
           </section>
 
@@ -224,6 +202,33 @@ export default function HistoryDetailPage() {
               {report.reportText}
             </div>
           </section>
+
+          {report.sources && report.sources.length > 0 && (
+            <section className="mt-8">
+              <h2 className="text-xl font-bold text-slate-900">参考来源</h2>
+              <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/80 p-5">
+                <ul className="space-y-2">
+                  {report.sources.map((s, i) => (
+                    <li key={i} className="text-xs leading-relaxed text-slate-500">
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-blue-600 hover:text-blue-700"
+                      >
+                        {s.title || s.url}
+                      </a>
+                      {s.snippet && (
+                        <span className="ml-2 text-slate-400">
+                          — {s.snippet.slice(0, 120)}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </main>

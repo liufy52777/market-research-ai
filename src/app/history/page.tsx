@@ -4,40 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { MouseEvent } from "react";
-
-const STORAGE_KEY = "market-research-reports";
-
-type ReportRecord = {
-  id: string;
-  title: string;
-  country: string;
-  industry: string;
-  product: string;
-  role: string;
-  purpose: string;
-  reportText: string;
-  createdAt: string;
-  model?: string;
-};
-
-function readReports(): ReportRecord[] {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed;
-  } catch {
-    return [];
-  }
-}
+import type { ReportRecord } from "@/lib/types";
+import { readReports, writeReports } from "@/lib/storage";
 
 function getSummary(text: string) {
   if (!text) {
@@ -86,11 +54,7 @@ export default function HistoryPage() {
     const nextReports = reports.filter((report) => report.id !== reportId);
     setReports(nextReports);
 
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextReports));
-    } catch {
-      // localStorage 写入失败时，页面状态仍然保持已删除
-    }
+    writeReports(nextReports);
   }
 
   function handleOpen(reportId: string) {
