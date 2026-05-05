@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+const BAILIAN_BASE_URL =
+  "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
+
 interface ReportRequest {
   country: string;
   industry: string;
@@ -7,6 +10,10 @@ interface ReportRequest {
   role: string;
   purpose: string;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Mock template builder (fallback)                                  */
+/* ------------------------------------------------------------------ */
 
 function buildReportText(data: ReportRequest): string {
   const { country, industry, product, role, purpose } = data;
@@ -61,6 +68,10 @@ function buildReportText(data: ReportRequest): string {
   return lines.join("\n");
 }
 
+/* ------------------------------------------------------------------ */
+/*  Validation                                                        */
+/* ------------------------------------------------------------------ */
+
 const requiredFields: (keyof ReportRequest)[] = [
   "country",
   "industry",
@@ -77,8 +88,120 @@ function isValidRequest(body: unknown): body is ReportRequest {
   const record = body as Record<string, unknown>;
 
   return requiredFields.every(
-    (field) => typeof record[field] === "string" && (record[field] as string).trim().length > 0,
+    (field) =>
+      typeof record[field] === "string" &&
+      (record[field] as string).trim().length > 0,
   );
+}
+
+/* ------------------------------------------------------------------ */
+/*  AI prompt builder                                                 */
+/* ------------------------------------------------------------------ */
+
+function buildUserPrompt(data: ReportRequest): string {
+  return `请根据以下信息生成一份中文市场调研报告。
+
+## 用户输入
+- 目标国家 / 地区：${data.country}
+- 行业：${data.industry}
+- 具体产品：${data.product}
+- 企业身份：${data.role}
+- 调研目的：${data.purpose}
+
+## 报告要求
+请严格按照以下七个章节撰写报告：
+
+一、执行摘要
+简要说明针对哪个国家、哪个行业、哪个产品进行调研，以及调研目的和核心结论。
+
+二、市场概况
+介绍${data.country}的${data.industry}市场现状、发展趋势、政策环境与市场规模概况。
+
+三、客户与需求分析
+分析潜在客户类型、需求特征与采购偏好。
+
+四、竞争格局分析
+分析本地生产企业、国际品牌供应商、中国企业等竞争层次。
+
+五、机会分析
+分析该产品进入该市场的主要机会方向。
+
+六、风险分析
+分析政策、认证、物流、客户获取、价格竞争、汇率等方面的潜在风险。
+
+七、初步进入建议
+给出 3-5 条简洁可操作的初步进入建议。
+
+## 写作要求
+- 使用中文撰写。
+- 内容要比通用模板更具体、更专业，适合企业决策参考。
+- 不要编造具体数字（如市场份额百分比、具体销售额等），如需要引用数据，使用"建议进一步核验"或"根据行业公开信息"等表述。
+- 语言客观、理性、精炼。`;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Bailian API call                                                  */
+/* ------------------------------------------------------------------ */
+
+interface BailianResponse {
+  choices?: Array<{
+    message?: {
+      content?: string;
+    };
+  }>;
+}
+
+async function callBailianAPI(
+  data: ReportRequest,
+  apiKey: string,
+  model: string,
+): Promise<string> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+  try {
+    const res = await fetch(BAILIAN_BASE_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          {
+            role: "system",
+            content:
+              "你是一名专业的海外市场调研分析师，擅长为中国企业撰写结构化市场调研报告。你的报告风格专业、客观、精炼，适合企业决策参考。",
+          },
+          {
+            role: "user",
+            content: buildUserPrompt(data),
+          },
+        ],
+        temperature: 0.4,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      const errorBody = await res.text().catch(() => "");
+      throw new Error(
+        `Bailian API returned ${res.status}${errorBody ? `: ${errorBody.slice(0, 200)}` : ""}`,
+      );
+    }
+
+    const json: BailianResponse = await res.json();
+
+    const content = json.choices?.[0]?.message?.content;
+    if (!content || content.trim().length === 0) {
+      throw new Error("Bailian API returned empty content");
+    }
+
+    return content.trim();
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -104,13 +227,38 @@ export async function POST(request: Request) {
     );
   }
 
-  const reportText = buildReportText(body);
+  const apiKey = process.env.DASHSCOPE_API_KEY;
+  const model = process.env.BAILIAN_MODEL || "qwen3.5-flash";
 
-  return NextResponse.json({
-    success: true,
-    reportText,
-    mode: "mock-template",
-  });
+  // No API key configured — use mock template directly
+  if (!apiKey) {
+    const reportText = buildReportText(body);
+    return NextResponse.json({
+      success: true,
+      reportText,
+      mode: "mock-template",
+      warning: "未配置 DASHSCOPE_API_KEY，当前使用本地模板生成",
+    });
+  }
+
+  // Try Bailian API — fallback to mock template on failure
+  try {
+    const reportText = await callBailianAPI(body, apiKey, model);
+    return NextResponse.json({
+      success: true,
+      reportText,
+      mode: "bailian-qwen",
+      model,
+    });
+  } catch {
+    const reportText = buildReportText(body);
+    return NextResponse.json({
+      success: true,
+      reportText,
+      mode: "mock-template-fallback",
+      warning: "AI 生成失败，当前使用本地模板生成",
+    });
+  }
 }
 
 /* ------------------------------------------------------------------ */
