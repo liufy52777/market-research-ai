@@ -11,6 +11,7 @@ import ReportRenderer, {
   extractScoreLevel,
 } from "@/components/ReportRenderer";
 import ScoreRadarChart from "@/components/ScoreRadarChart";
+import MarketVisualization from "@/components/MarketVisualization";
 
 /* ------------------------------------------------------------------ */
 /*  Detail conclusions                                                */
@@ -303,6 +304,11 @@ export default function HistoryDetailPage() {
               country={report.country}
               product={report.product}
             />
+          )}
+
+          {/* Market Visualization */}
+          {report.reportText && (
+            <MarketVisualization reportText={report.reportText} />
           )}
 
           {/* Report Body */}

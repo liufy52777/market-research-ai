@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafbff;
-  --foreground: #0f172a;
-  --primary: #6366f1;
-  --primary-soft: #818cf8;
-  --accent: #8b5cf6;
+  --background: #f8faff;
+  --foreground: #102247;
+  --primary: #2f6bff;
+  --primary-soft: #5b8af7;
+  --accent: #7a5cff;
   --surface: #ffffff;
 }
 
@@ -20,30 +20,35 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Layered tech atmosphere glow */
+/* Layered glow — soft tech atmosphere */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99, 102, 241, 0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 50% at 85% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 15% 70%, rgba(59, 130, 246, 0.04) 0%, transparent 55%),
-    radial-gradient(ellipse 30% 30% at 70% 90%, rgba(6, 182, 212, 0.03) 0%, transparent 50%);
+    /* Top center — main blue glow */
+    radial-gradient(ellipse 80% 55% at 50% 5%, rgba(47, 107, 255, 0.10) 0%, transparent 55%),
+    /* Right mid — Dashboard area violet halo (enhanced) */
+    radial-gradient(ellipse 55% 55% at 82% 42%, rgba(122, 92, 255, 0.10) 0%, transparent 55%),
+    /* Mid-left — soft blue data flow */
+    radial-gradient(ellipse 45% 40% at 25% 50%, rgba(47, 107, 255, 0.05) 0%, transparent 50%),
+    /* Bottom left — subtle cyan */
+    radial-gradient(ellipse 40% 35% at 18% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
   pointer-events: none;
 }
 
-/* Subtle dot grid pattern overlay */
+/* Dot grid pattern — very subtle */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
-  opacity: 0.25;
+  opacity: 0.15;
   background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-size: 22px 22px;
   pointer-events: none;
 }
