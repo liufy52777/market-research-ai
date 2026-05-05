@@ -149,7 +149,7 @@ function DonutChart() {
             {segments.map((seg, i) => (
               <circle key={i} cx={c} cy={c} r={r} fill="none" stroke={seg.color} strokeWidth="10" strokeDasharray={`${seg.dash} ${circ - seg.dash}`} strokeDashoffset={-seg.off} transform="rotate(-90 50 50)" />
             ))}
-            <text x={c} y={c - 4} textAnchor="middle" className="fill-slate-800" style={{ fontSize: "16px", fontWeight: 700 }}>100%</text>
+            <text x={c} y={c} textAnchor="middle" dominantBaseline="central" className="fill-slate-800" style={{ fontSize: "16px", fontWeight: 700 }}>100%</text>
           </svg>
         </div>
         <div className="flex flex-col gap-1.5">
@@ -193,16 +193,16 @@ function DashboardShell() {
       <div className="relative flex rounded-[24px] border border-[#E6ECF7] bg-white/88 shadow-[0_40px_100px_rgba(47,107,255,0.20)] backdrop-blur-xl">
         {/* Left icon rail */}
         <div className="hidden w-[56px] shrink-0 flex-col items-center gap-5 border-r border-slate-100 bg-slate-50/60 py-5 sm:flex">
-          <svg width="32" height="32" viewBox="0 0 36 36" fill="none" className="h-8 w-8 shrink-0">
+          <svg width="36" height="36" viewBox="0 0 44 44" fill="none" className="h-9 w-9 shrink-0">
             <defs>
-              <linearGradient id="logoDash" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#2f6bff" />
-                <stop offset="100%" stopColor="#7a5cff" />
+              <linearGradient id="logoDash" x1="0.15" y1="0" x2="0.85" y2="1">
+                <stop offset="0%" stopColor="#38bdf8" />
+                <stop offset="35%" stopColor="#3b82f6" />
+                <stop offset="100%" stopColor="#7c3aed" />
               </linearGradient>
             </defs>
-            <rect width="36" height="36" rx="10" fill="url(#logoDash)" />
-            <path d="M10 26L18 8L26 26" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            <line x1="14" y1="20" x2="22" y2="20" stroke="white" strokeWidth="2" strokeLinecap="round" />
+            <path d="M12 36 C16 24 19 14 22 8" fill="none" stroke="url(#logoDash)" strokeWidth="12" strokeLinecap="round" />
+            <path d="M32 36 C28 24 25 14 22 8" fill="none" stroke="url(#logoDash)" strokeWidth="12" strokeLinecap="round" />
           </svg>
           {[
             <svg key="1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 21 9 12 15 12 15 21" /></svg>,
