@@ -2,9 +2,98 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import type { ReportRecord } from "@/lib/types";
 import { readReports } from "@/lib/storage";
+import ReportRenderer, {
+  extractScores,
+  extractConclusion,
+  extractScoreLevel,
+} from "@/components/ReportRenderer";
+import ScoreRadarChart from "@/components/ScoreRadarChart";
+
+/* ------------------------------------------------------------------ */
+/*  Detail conclusions                                                */
+/* ------------------------------------------------------------------ */
+
+function DetailConclusions({
+  reportText,
+  webSearchEnabled,
+  modelName,
+  country,
+  product,
+}: {
+  reportText: string;
+  webSearchEnabled: boolean;
+  modelName: string | null;
+  country: string;
+  product: string;
+}) {
+  const conclusion = useMemo(() => extractConclusion(reportText), [reportText]);
+  const scoreLevel = useMemo(() => extractScoreLevel(reportText), [reportText]);
+  const { scores, found: scoresFound } = useMemo(
+    () => extractScores(reportText),
+    [reportText],
+  );
+
+  return (
+    <div className="mb-6 space-y-4">
+      <div className="grid gap-3 sm:grid-cols-3">
+        {conclusion && (
+          <div
+            className={`rounded-xl border px-3 py-2.5 backdrop-blur-sm ${
+              conclusion === "建议优先进入"
+                ? "border-emerald-200/60 bg-emerald-50/70"
+                : conclusion === "建议谨慎进入"
+                  ? "border-blue-200/60 bg-blue-50/70"
+                  : "border-red-200/60 bg-red-50/70"
+            }`}
+          >
+            <p className="text-xs text-slate-400">结论性建议</p>
+            <p className="mt-0.5 text-sm font-semibold text-slate-700">
+              {conclusion}
+            </p>
+          </div>
+        )}
+        {scoreLevel && (
+          <div className="rounded-xl border border-slate-200/60 bg-slate-50/70 px-3 py-2.5 backdrop-blur-sm">
+            <p className="text-xs text-slate-400">市场机会等级</p>
+            <p className="mt-0.5 text-sm font-semibold text-slate-700">
+              {scoreLevel}
+            </p>
+          </div>
+        )}
+        <div className="rounded-xl border border-slate-200/60 bg-slate-50/70 px-3 py-2.5 backdrop-blur-sm">
+          <p className="text-xs text-slate-400">调研对象</p>
+          <p className="mt-0.5 text-sm font-semibold text-slate-700">
+            {country} / {product}
+          </p>
+        </div>
+        <div className="rounded-xl border border-slate-200/60 bg-slate-50/70 px-3 py-2.5 backdrop-blur-sm">
+          <p className="text-xs text-slate-400">联网搜索</p>
+          <p className={`mt-0.5 text-sm font-semibold ${webSearchEnabled ? "text-emerald-600" : "text-slate-400"}`}>
+            {webSearchEnabled ? "已启用" : "未启用"}
+          </p>
+        </div>
+        {modelName && (
+          <div className="rounded-xl border border-slate-200/60 bg-slate-50/70 px-3 py-2.5 backdrop-blur-sm">
+            <p className="text-xs text-slate-400">模型</p>
+            <p className="mt-0.5 text-sm font-semibold text-slate-500">{modelName}</p>
+          </div>
+        )}
+      </div>
+
+      {scoresFound && (
+        <div className="rounded-xl border border-slate-200/80 bg-white/80 p-5 backdrop-blur-sm">
+          <h3 className="mb-4 text-sm font-semibold text-slate-700">
+            市场机会雷达图
+          </h3>
+          <ScoreRadarChart scores={scores} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function buildMarkdown(report: ReportRecord) {
   return `# 市场调研报告
@@ -205,10 +294,22 @@ export default function HistoryDetailPage() {
             </div>
           </section>
 
+          {/* Core Conclusions */}
+          {report.reportText && (
+            <DetailConclusions
+              reportText={report.reportText}
+              webSearchEnabled={report.webSearchEnabled ?? false}
+              modelName={report.model ?? null}
+              country={report.country}
+              product={report.product}
+            />
+          )}
+
+          {/* Report Body */}
           <section className="mt-8">
             <h2 className="text-2xl font-bold text-slate-900">完整报告正文</h2>
-            <div className="mt-5 whitespace-pre-line rounded-2xl border border-slate-100 bg-white p-6 leading-8 text-slate-700 shadow-sm">
-              {report.reportText}
+            <div className="mt-5 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+              <ReportRenderer text={report.reportText} />
             </div>
           </section>
 

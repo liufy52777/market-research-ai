@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import type { FormData, ReportRecord, ApiResponse, SearchSource } from "@/lib/types";
 import { writeReports, readReports, MAX_REPORTS } from "@/lib/storage";
+import ReportRenderer, {
+  extractScores,
+  extractConclusion,
+  extractScoreLevel,
+} from "@/components/ReportRenderer";
+import ScoreRadarChart from "@/components/ScoreRadarChart";
 
 const emptyForm: FormData = {
   country: "",
@@ -341,8 +347,21 @@ export default function ResearchPage() {
               </div>
             </div>
 
-            <div className="whitespace-pre-line text-sm leading-7 text-slate-700">
-              {reportText}
+            {/* Core Conclusions + Radar */}
+            {reportText && (
+              <CoreConclusions
+                reportText={reportText}
+                webSearchEnabled={webSearchEnabled}
+                modelName={modelName}
+                country={reportData.country}
+                product={reportData.product}
+                generationMode={generationMode}
+              />
+            )}
+
+            {/* Report Body */}
+            <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+              <ReportRenderer text={reportText} />
             </div>
 
             {/* Sources */}
@@ -416,6 +435,146 @@ export default function ResearchPage() {
 
         <div className="h-16" />
       </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Core conclusions + Radar                                          */
+/* ------------------------------------------------------------------ */
+
+function CoreConclusions({
+  reportText,
+  webSearchEnabled,
+  modelName,
+  country,
+  product,
+  generationMode,
+}: {
+  reportText: string;
+  webSearchEnabled: boolean;
+  modelName: string | null;
+  country: string;
+  product: string;
+  generationMode: string | null;
+}) {
+  const conclusion = useMemo(() => extractConclusion(reportText), [reportText]);
+  const scoreLevel = useMemo(() => extractScoreLevel(reportText), [reportText]);
+  const { scores, found: scoresFound } = useMemo(
+    () => extractScores(reportText),
+    [reportText],
+  );
+
+  return (
+    <div className="mb-6 space-y-4">
+      {/* Key info cards */}
+      <div className="grid gap-3 sm:grid-cols-3">
+        {conclusion && (
+          <ConclusionCard
+            title="结论性建议"
+            value={conclusion}
+            color={
+              conclusion === "建议优先进入"
+                ? "emerald"
+                : conclusion === "建议谨慎进入"
+                  ? "blue"
+                  : "red"
+            }
+          />
+        )}
+        {scoreLevel && (
+          <ConclusionCard
+            title="市场机会等级"
+            value={scoreLevel}
+            color={
+              scoreLevel === "高" || scoreLevel === "中高"
+                ? "emerald"
+                : scoreLevel === "中"
+                  ? "amber"
+                  : "red"
+            }
+          />
+        )}
+        <ConclusionCard
+          title="调研对象"
+          value={`${country} / ${product}`}
+          color="slate"
+        />
+        <ConclusionCard
+          title="联网搜索"
+          value={webSearchEnabled ? "已启用" : "未启用"}
+          color={webSearchEnabled ? "emerald" : "slate"}
+        />
+        {modelName && (
+          <ConclusionCard title="模型" value={modelName} color="slate" />
+        )}
+        {generationMode && (
+          <ConclusionCard
+            title="生成模式"
+            value={generationMode}
+            color="slate"
+          />
+        )}
+      </div>
+
+      {/* Radar chart */}
+      {scoresFound && (
+        <div className="rounded-xl border border-slate-200/80 bg-white/80 p-5 backdrop-blur-sm">
+          <h3 className="mb-4 text-sm font-semibold text-slate-700">
+            市场机会雷达图
+          </h3>
+          <ScoreRadarChart scores={scores} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ConclusionCard({
+  title,
+  value,
+  color,
+}: {
+  title: string;
+  value: string;
+  color: string;
+}) {
+  const schemes: Record<string, { bg: string; text: string; border: string }> =
+    {
+      emerald: {
+        bg: "bg-emerald-50/70",
+        text: "text-emerald-700",
+        border: "border-emerald-200/60",
+      },
+      blue: {
+        bg: "bg-blue-50/70",
+        text: "text-blue-700",
+        border: "border-blue-200/60",
+      },
+      red: {
+        bg: "bg-red-50/70",
+        text: "text-red-700",
+        border: "border-red-200/60",
+      },
+      amber: {
+        bg: "bg-amber-50/70",
+        text: "text-amber-700",
+        border: "border-amber-200/60",
+      },
+      slate: {
+        bg: "bg-slate-50/70",
+        text: "text-slate-600",
+        border: "border-slate-200/60",
+      },
+    };
+  const s = schemes[color] || schemes.slate;
+
+  return (
+    <div
+      className={`rounded-xl border ${s.border} ${s.bg} p-3 backdrop-blur-sm`}
+    >
+      <p className="text-xs text-slate-400">{title}</p>
+      <p className={`mt-0.5 text-sm font-semibold ${s.text}`}>{value}</p>
     </div>
   );
 }

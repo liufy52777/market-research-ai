@@ -1,7 +1,7 @@
 export default function SiteFooter() {
   return (
-    <footer className="border-t border-slate-200/60 bg-gradient-to-b from-slate-50 to-white">
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+    <footer className="border-t border-indigo-100/60 bg-gradient-to-b from-slate-50 to-white">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="flex flex-col items-center text-center">
           <p className="mb-2 text-sm font-semibold text-slate-800">
             Market Research AI

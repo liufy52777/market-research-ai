@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafd;
+  --background: #fafbff;
   --foreground: #0f172a;
-  --primary: #2563eb;
-  --primary-soft: #3b82f6;
-  --accent: #6366f1;
+  --primary: #6366f1;
+  --primary-soft: #818cf8;
+  --accent: #8b5cf6;
   --surface: #ffffff;
 }
 
@@ -19,18 +19,31 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
 }
 
-/* Subtle radial glow — gives a soft tech atmosphere without going dark */
+/* Layered tech atmosphere glow */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(59, 130, 246, 0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(99, 102, 241, 0.04) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 30% at 20% 60%, rgba(6, 182, 212, 0.03) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99, 102, 241, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 85% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 15% 70%, rgba(59, 130, 246, 0.04) 0%, transparent 55%),
+    radial-gradient(ellipse 30% 30% at 70% 90%, rgba(6, 182, 212, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Subtle dot grid pattern overlay */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.25;
+  background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+  background-size: 24px 24px;
   pointer-events: none;
 }
