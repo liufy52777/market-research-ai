@@ -1,36 +1,28 @@
 # Market Research AI
 
-面向企业出海和行业分析场景的 AI 市场调研报告生成网站原型。
+面向企业出海与行业分析场景的 **AI 市场调研报告生成工具**。
 
-**线上访问地址：** [https://market-research-ai-six.vercel.app/](https://market-research-ai-six.vercel.app/)
+线上地址：[https://market-research-ai-six.vercel.app/](https://market-research-ai-six.vercel.app/)
 
-**当前版本：** v0.1 本地模板生成版
+当前版本：**v0.2 增强版**（已接入 AI 模型与联网搜索）
 
 ---
 
 ## 项目简介
 
-Market Research AI 帮助用户输入目标国家、行业、产品与调研目的，快速生成结构化的市场调研报告。报告涵盖执行摘要、市场概况、客户与需求分析、竞争格局、机会分析、风险分析及初步进入建议七个章节。
+Market Research AI 帮助用户输入目标国家/地区、行业、具体产品、企业身份和调研目的，由 AI 模型实时生成结构化的市场调研报告。报告涵盖市场概况、客户结构、竞争格局、机会与风险分析、进入策略建议等章节，并包含市场可视化分析（雷达图、综合评分等）。
 
 ---
 
-## 已完成功能
+## 核心功能
 
-- 首页产品展示（浅色科技风）
-- 市场调研输入页（5 个字段：国家/地区、行业、具体产品、企业身份、调研目的）
-- 模板化调研报告生成（7 个章节，动态填入用户输入）
-- 复制报告（一键复制完整文本到剪贴板）
-- 重新填写（一键清空表单和报告）
-- Markdown 导出（下载 .md 文件，含报告元信息）
-- 示例报告页（摩洛哥汽车线束完整示例）
-- 历史报告保存（自动存入 localStorage，最多 20 条）
-- 历史报告列表（卡片展示、摘要预览）
-- 历史报告详情页（完整报告阅读）
-- 删除历史报告
-- 顶部统一导航栏（4 个入口）
-- 底部统一 Footer
-- 浅色科技风 UI（毛玻璃卡片、渐变按钮、柔光背景）
-- Vercel 在线部署
+- **AI 报告生成** — 接入阿里云百炼 DashScope Qwen 模型，支持联网搜索增强
+- **结构化报告渲染** — 标题层级、表格、分节展示，排版清晰
+- **市场可视化分析** — 六维雷达图、综合评分仪表盘、维度评分详情
+- **Markdown 导出** — 一键下载 .md 文件，包含元信息和资料来源
+- **历史报告管理** — localStorage 本地保存（最多 20 条），支持列表查看、详情阅读、复制、删除
+- **示例报告** — 内置完整示例，展示报告结构和分析维度
+- **科技风 UI** — 浅色渐变背景、毛玻璃卡片、SVG 图表、Dashboard 预览
 
 ---
 
@@ -38,22 +30,16 @@ Market Research AI 帮助用户输入目标国家、行业、产品与调研目�
 
 | 类别 | 技术 |
 |------|------|
-| 框架 | Next.js 16 |
+| 框架 | Next.js 16 (App Router) |
 | 语言 | TypeScript |
 | 样式 | Tailwind CSS 4 |
-| UI 库 | React 19 |
+| UI | React 19 |
+| AI 模型 | 阿里云百炼 DashScope Qwen |
+| 搜索增强 | 百炼内置联网搜索 |
+| 图表 | 原生 SVG（折线图、环形图、雷达图） |
 | 持久化 | 浏览器 localStorage |
 | 部署 | Vercel |
 | 代码托管 | GitHub |
-
----
-
-## 功能边界
-
-- 当前报告内容为**模板生成结果**，尚未接入真实 AI 模型
-- 尚未接入联网搜索与真实数据源
-- 历史报告保存在浏览器 localStorage 中，**不会跨设备同步**
-- 当前版本适合作为**功能原型和产品展示版本**
 
 ---
 
@@ -63,6 +49,10 @@ Market Research AI 帮助用户输入目标国家、行业、产品与调研目�
 # 安装依赖
 npm install
 
+# 配置环境变量（创建 .env.local）
+# DASHSCOPE_API_KEY=你的阿里云百炼 API Key
+# BAILIAN_MODEL=qwen3.5-flash（可选，默认值）
+
 # 启动开发服务器
 npm run dev
 
@@ -71,9 +61,6 @@ npm run lint
 
 # 生产构建
 npm run build
-
-# 启动生产模式（构建后）
-npm run start
 ```
 
 开发服务器启动后访问 [http://localhost:3000](http://localhost:3000)。
@@ -82,38 +69,64 @@ npm run start
 
 ## 部署
 
-项目已通过 GitHub + Vercel 部署。推送到 `main` 分支后 Vercel 会自动触发部署。
+项目通过 GitHub + Vercel 部署。推送 `main` 分支后 Vercel 自动触发构建。
+
+需在 Vercel 环境变量中配置 `DASHSCOPE_API_KEY`，否则将回退到模板生成模式。
 
 ---
 
-## 下一阶段计划
-
-| 版本 | 目标 | 核心内容 |
-|------|------|----------|
-| v0.2 | 真实 AI 生成版 | 接入 AI 模型，动态生成报告内容 |
-| v0.3 | 联网搜索与来源引用版 | 接入搜索 API，报告增加参考来源 |
-| v0.4 | 用户与云端保存版 | 用户登录、数据库保存、跨设备同步 |
-| v0.5 | 专业报告导出版 | PDF/Word 导出、模板风格选择、图表模块 |
-
----
-
-## 项目文件结构
+## 项目结构
 
 ```
 src/
   app/
-    page.tsx              # 首页
-    layout.tsx            # 根布局（Header + Footer）
-    globals.css           # 全局样式（柔光背景）
+    page.tsx                  # 首页（Hero + Dashboard 预览 + 功能卡片）
+    layout.tsx                # 根布局
+    globals.css               # 全局样式（光晕背景、点阵）
     research/
-      page.tsx            # 调研表单 + 报告生成
+      page.tsx                # 调研表单 + 报告生成
     example/
-      page.tsx            # 示例报告
+      page.tsx                # 示例报告
     history/
-      page.tsx            # 历史报告列表
+      page.tsx                # 历史报告列表
       [id]/
-        page.tsx          # 历史报告详情
+        page.tsx              # 历史报告详情
+    api/
+      generate-report/
+        route.ts              # AI 报告生成 API
   components/
-    SiteHeader.tsx        # 顶部导航栏
-    SiteFooter.tsx        # 底部 Footer
+    SiteHeader.tsx            # 顶部导航栏
+    SiteFooter.tsx            # 底部页脚
+    ReportRenderer.tsx        # 报告正文渲染器
+    ScoreRadarChart.tsx       # 五维雷达图
+    MarketVisualization.tsx   # 六维市场可视化分析
+  lib/
+    types.ts                  # 共享类型定义
+    storage.ts                # localStorage 读写工具
 ```
+
+---
+
+## 功能边界
+
+- 报告为 AI 辅助生成的初步市场调研结果，不等同于正式咨询报告
+- 历史报告保存在浏览器 localStorage，不支持跨设备同步
+- Vercel 部署在国内访问可能不稳定
+- API Key 通过环境变量管理，不可提交到 GitHub
+
+---
+
+## 路线图
+
+| 版本 | 目标 | 状态 |
+|------|------|------|
+| v0.1 | 本地模板生成版 | 已完成 |
+| v0.2 | AI 模型生成 + 联网搜索版 | 已完成 |
+| v0.3 | 增强联网搜索与来源引用 | 计划中 |
+| v0.4 | 优化报告结构与可视化模块 | 计划中 |
+| v0.5 | 接入数据库与用户系统 | 计划中 |
+| v0.6 | PDF / Word 导出 | 计划中 |
+| v0.7 | 国内服务器部署 | 计划中 |
+| v1.0 | 可交付产品原型 | 计划中 |
+
+详见 [ROADMAP.md](./ROADMAP.md)。
