@@ -51,7 +51,7 @@ npm install
 
 # 配置环境变量（创建 .env.local）
 # DASHSCOPE_API_KEY=你的阿里云百炼 API Key
-# BAILIAN_MODEL=qwen3.5-flash（可选，默认值）
+# BAILIAN_MODEL=qwen3.5-plus（可选，默认值）
 
 # 启动开发服务器
 npm run dev

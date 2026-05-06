@@ -62,7 +62,7 @@
 | 变量名 | 用途 | 默认值 |
 |--------|------|--------|
 | `DASHSCOPE_API_KEY` | 阿里云百炼 API Key | 无（未配置时回退模板） |
-| `BAILIAN_MODEL` | 模型名称 | `qwen3.5-flash` |
+| `BAILIAN_MODEL` | 模型名称 | `qwen3.5-plus` |
 
 ---
 
