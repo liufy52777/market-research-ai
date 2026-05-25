@@ -2,7 +2,7 @@
 
 面向企业出海与行业分析场景的 **AI 市场调研报告生成工具**。
 
-线上地址：[https://market-research-ai-six.vercel.app/](https://market-research-ai-six.vercel.app/)
+线上地址：[https://market-research-ai-liufy52777s-projects.vercel.app/](https://market-research-ai-liufy52777s-projects.vercel.app/)
 
 当前版本：**v0.2 增强版**（已接入 AI 模型与联网搜索）
 
@@ -51,7 +51,8 @@ npm install
 
 # 配置环境变量（创建 .env.local）
 # DASHSCOPE_API_KEY=你的阿里云百炼 API Key
-# BAILIAN_MODEL=qwen3.5-plus（可选，默认值）
+# DASHSCOPE_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1（可选，默认值）
+# DASHSCOPE_MODEL=qwen3.7-max（可选，默认值）
 
 # 启动开发服务器
 npm run dev

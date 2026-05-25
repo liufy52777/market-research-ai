@@ -8,7 +8,7 @@
 
 ## 线上地址
 
-[https://market-research-ai-six.vercel.app/](https://market-research-ai-six.vercel.app/)
+[https://market-research-ai-liufy52777s-projects.vercel.app/](https://market-research-ai-liufy52777s-projects.vercel.app/)
 
 ---
 
@@ -62,7 +62,8 @@
 | 变量名 | 用途 | 默认值 |
 |--------|------|--------|
 | `DASHSCOPE_API_KEY` | 阿里云百炼 API Key | 无（未配置时回退模板） |
-| `BAILIAN_MODEL` | 模型名称 | `qwen3.5-plus` |
+| `DASHSCOPE_BASE_URL` | API 基础地址 | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| `DASHSCOPE_MODEL` | 模型名称 | `qwen3.7-max` |
 
 ---
 

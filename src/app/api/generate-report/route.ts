@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
-export const maxDuration = 300; // 5 minutes for qwen3.5-plus with web search
+export const maxDuration = 300; // 5 minutes for qwen3.7-max with web search
 
-const BAILIAN_BASE_URL =
-  "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
+const DASHSCOPE_BASE_URL =
+  (process.env.DASHSCOPE_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1") + "/chat/completions";
 
 interface ReportRequest {
   country: string;
@@ -332,7 +332,7 @@ async function callBailianAPI(
   const timeoutId = setTimeout(() => controller.abort(), 300000);
 
   try {
-    const res = await fetch(BAILIAN_BASE_URL, {
+    const res = await fetch(DASHSCOPE_BASE_URL, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
@@ -428,7 +428,7 @@ export async function POST(request: Request) {
   }
 
   const apiKey = process.env.DASHSCOPE_API_KEY;
-  const model = process.env.BAILIAN_MODEL || "qwen3.5-plus";
+  const model = process.env.DASHSCOPE_MODEL || "qwen3.7-max";
   const generatedAt = new Date().toISOString();
 
   // No API key configured — use mock template with clear warning
